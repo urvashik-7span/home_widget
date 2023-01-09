@@ -31,6 +31,12 @@ Future<void> backgroundCallback(Uri? uri) async {
       });
       await HomeWidget.saveWidgetData<String>('_number', numberData);
       await HomeWidget.updateWidget(name: 'AppWidgetProvider', iOSName: 'AppWidgetProvider');
+    } else if (data?[1] == 'c') {
+      await HomeWidget.getWidgetData<String>('_number', defaultValue: "").then((value) {
+        numberData = "";
+      });
+      await HomeWidget.saveWidgetData<String>('_number', numberData);
+      await HomeWidget.updateWidget(name: 'AppWidgetProvider', iOSName: 'AppWidgetProvider');
     } else {
       await HomeWidget.getWidgetData<String>('_number', defaultValue: "").then((value) {
         print("num:$value");

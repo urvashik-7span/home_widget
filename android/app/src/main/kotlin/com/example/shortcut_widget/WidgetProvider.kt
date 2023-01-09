@@ -81,9 +81,17 @@ class AppWidgetProvider : HomeWidgetProvider() {
                 val backgroundIntentRemove = HomeWidgetBackgroundIntent.getBroadcast(context, Uri.parse("myAppWidget://onNumberBtnClick,-"))
                 setOnClickPendingIntent(R.id.bt_erase, backgroundIntentRemove)
 
+                val backgroundIntentClear = HomeWidgetBackgroundIntent.getBroadcast(context, Uri.parse("myAppWidget://onNumberBtnClick,c"))
+                setOnClickPendingIntent(R.id.bt_clear, backgroundIntentClear)
+
             }
             appWidgetManager.updateAppWidget(widgetId, views)
         }
+    }
+
+    override fun onReceive(context: Context?, intent: Intent?) {
+        super.onReceive(context, intent)
+        Log.d("TAG", "onReceive: $intent")
     }
 
 }
