@@ -12,39 +12,49 @@ void main() {
 Future<void> backgroundCallback(Uri? uri) async {
   print("onbackgroundcallback $uri");
   if (uri?.host == 'updatecounter') {
-    int counter = 0;
-    await HomeWidget.getWidgetData<int>('_counter', defaultValue: 0).then((value) {
-      counter = value ?? 0;
-      counter++;
+    int? data = 0;
+    await HomeWidget.getWidgetData<int>('_counter', defaultValue: 0)
+        .then((value) {
+      data = value ?? 0;
     });
-    await HomeWidget.saveWidgetData<int>('_counter', counter);
-    await HomeWidget.updateWidget(name: 'AppWidgetProvider', iOSName: 'AppWidgetProvider');
+    await HomeWidget.saveWidgetData<int>('_counter', data);
+    await HomeWidget.updateWidget(
+        name: 'AppWidgetProvider', iOSName: 'AppWidgetProvider');
   }
   var data = uri?.host.split(',');
   if (data?[0] == 'onnumberbtnclick') {
     String? numberData = "";
     if (data?[1] == '-') {
-      await HomeWidget.getWidgetData<String>('_number', defaultValue: "").then((value) {
+      await HomeWidget.getWidgetData<String>('_number', defaultValue: "")
+          .then((value) {
         print("num:$value");
         numberData = value?.substring(0, value.length - 1);
         print("value:$value");
       });
       await HomeWidget.saveWidgetData<String>('_number', numberData);
-      await HomeWidget.updateWidget(name: 'AppWidgetProvider', iOSName: 'AppWidgetProvider');
+      await HomeWidget.updateWidget(
+          name: 'AppWidgetProvider', iOSName: 'AppWidgetProvider');
     } else if (data?[1] == 'c') {
-      await HomeWidget.getWidgetData<String>('_number', defaultValue: "").then((value) {
-        numberData = "";
-      });
-      await HomeWidget.saveWidgetData<String>('_number', numberData);
-      await HomeWidget.updateWidget(name: 'AppWidgetProvider', iOSName: 'AppWidgetProvider');
+      final result = await HomeWidget.getWidgetData<String>('_number', defaultValue: "");
+      if (result?.isNotEmpty??false) {
+        // numberData = "";
+        numberData = result?.substring(0, result.length - 1)??'';
+      }
+      final saveResult = await HomeWidget.saveWidgetData<String>('_number', numberData);
+      if(saveResult!=null){
+        await HomeWidget.updateWidget(
+            name: 'AppWidgetProvider', iOSName: 'AppWidgetProvider');
+      }
     } else {
-      await HomeWidget.getWidgetData<String>('_number', defaultValue: "").then((value) {
+      await HomeWidget.getWidgetData<String>('_number', defaultValue: "")
+          .then((value) {
         print("num:$value");
         numberData = '$value${data?[1]}';
         print("value:$value");
       });
       await HomeWidget.saveWidgetData<String>('_number', numberData);
-      await HomeWidget.updateWidget(name: 'AppWidgetProvider', iOSName: 'AppWidgetProvider');
+      await HomeWidget.updateWidget(
+          name: 'AppWidgetProvider', iOSName: 'AppWidgetProvider');
     }
   }
 }
@@ -61,7 +71,8 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         canvasColor: Colors.transparent.withOpacity(0.2),
-        bottomSheetTheme: BottomSheetThemeData(backgroundColor: Colors.transparent.withOpacity(0.5)),
+        bottomSheetTheme: BottomSheetThemeData(
+            backgroundColor: Colors.transparent.withOpacity(0.5)),
         // This is the theme of your application.
         //
         // Try running your application with "flutter run". You'll see the
@@ -79,6 +90,8 @@ class MyApp extends StatelessWidget {
 }
 
 class BottomsheetWidget extends StatefulWidget {
+  const BottomsheetWidget({super.key});
+
   @override
   State<BottomsheetWidget> createState() => _BottomsheetWidgetState();
 }
@@ -93,7 +106,7 @@ class _BottomsheetWidgetState extends State<BottomsheetWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Opacity(
+    return const Opacity(
       opacity: 0.3,
     );
   }
@@ -106,12 +119,15 @@ class _BottomsheetWidgetState extends State<BottomsheetWidget> {
           builder: (builder) {
             return Container(
               height: 350.0,
-              color: Colors.transparent, //could change this to Color(0xFF737373),
+              color: Colors.transparent,
+              //could change this to Color(0xFF737373),
               //so you don't have to change MaterialApp canvasColor
               child: Container(
                   decoration: const BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.only(topLeft: Radius.circular(10.0), topRight: Radius.circular(10.0))),
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10.0),
+                          topRight: Radius.circular(10.0))),
                   child: const Center(
                     child: Text("This is a modal sheet"),
                   )),
@@ -150,7 +166,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void loadData() async {
-    await HomeWidget.getWidgetData<String>('_number', defaultValue: "").then((value) {
+    await HomeWidget.getWidgetData<String>('_number', defaultValue: "")
+        .then((value) {
       _counter = value ?? "0";
     });
     setState(() {});
@@ -158,7 +175,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> updateAppWidget() async {
     await HomeWidget.saveWidgetData<String>('_number', _counter);
-    await HomeWidget.updateWidget(name: 'AppWidgetProvider', iOSName: 'AppWidgetProvider');
+    await HomeWidget.updateWidget(
+        name: 'AppWidgetProvider', iOSName: 'AppWidgetProvider');
   }
 
   void _incrementCounter() {
@@ -182,6 +200,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
@@ -190,37 +209,22 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
         // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              _counter,
-              style: Theme.of(context).textTheme.headline4?.copyWith(color: Colors.white),
-            ),
-          ],
+        child: Container(
+          height: 100,
+          width: double.infinity,
+          child: Text(
+            "N: $_counter",
+            style: Theme.of(context)
+                .textTheme
+                .headline4
+                ?.copyWith(color: Colors.black),
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
